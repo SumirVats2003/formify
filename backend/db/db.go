@@ -2,20 +2,15 @@ package db
 
 import (
 	"log"
-	"os"
 
-	"github.com/joho/godotenv"
+	"github.com/SumirVats2003/formify/backend/utils"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 func ConnectDB() (*mongo.Client, error) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		panic(err)
-	}
+	uri := utils.GetEnv("MONGO_URI", "")
 
-	uri := os.Getenv("MONGO_URI")
 	if uri == "" {
 		log.Fatal("Set your 'MONGO_URI' environment variable.")
 	}

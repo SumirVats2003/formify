@@ -2,14 +2,20 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/SumirVats2003/formify/backend/internal/app"
 	"github.com/SumirVats2003/formify/backend/internal/routes"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: .env file not found, using environment variables")
+	}
+
 	port := ":8080"
 	app, err := app.InitApp()
 	if err != nil {
