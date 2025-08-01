@@ -11,5 +11,9 @@ func SetupRoutes(app *app.App) *chi.Mux {
 	// heartbeat
 	r.Get("/heartbeat", app.Heartbeat)
 
+	// route groups
+	authRouter := InitAuthRoutes(app)
+
+	r.Mount("/auth", authRouter)
 	return r
 }
