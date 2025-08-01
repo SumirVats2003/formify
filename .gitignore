@@ -1,0 +1,18 @@
+# Root-level
+node_modules/
+dist/
+.env
+.DS_Store
+
+# Client (Angular)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/cache/
+
+# Server (Go)
+backend/bin/
+backend/vendor/
+backend/*.log
+backend/*.exe
+backend/*.out
+backend/.env
