@@ -1,0 +1,30 @@
+package db
+
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
+)
+
+func ConnectDB() (*mongo.Client, error) {
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(err)
+	}
+
+	uri := os.Getenv("MONGO_URI")
+	if uri == "" {
+		log.Fatal("Set your 'MONGO_URI' environment variable.")
+	}
+
+	client, err := mongo.Connect(options.Client().ApplyURI(uri))
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Connected to database...")
+
+	return client, nil
+}
