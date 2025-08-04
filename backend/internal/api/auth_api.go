@@ -31,6 +31,11 @@ func LoginApi(loginRequest models.LoginRequest) (string, error) {
 	return userToken, nil
 }
 
+func Signup(signupRequest models.SignupRequest) (string, error) {
+	// return signup token
+	return "", nil
+}
+
 func createToken(email string) (string, error) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": email,
