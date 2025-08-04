@@ -9,19 +9,19 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type Authenticator struct {
+type AuthRouter struct {
 	app *app.App
 }
 
 func InitAuthRoutes(app *app.App) chi.Router {
-	a := Authenticator{app: app}
+	a := AuthRouter{app: app}
 	r := chi.NewRouter()
 	r.Get("/login", a.Login)
 	r.Post("/signup", a.Signup)
 	return r
 }
 
-func (a Authenticator) Login(w http.ResponseWriter, r *http.Request) {
+func (a AuthRouter) Login(w http.ResponseWriter, r *http.Request) {
 	var loginRequest models.LoginRequest
 	loginRequest, err := utils.ParseJSON(loginRequest, r)
 
@@ -34,7 +34,7 @@ func (a Authenticator) Login(w http.ResponseWriter, r *http.Request) {
 	// redirect to api and create a database layer
 }
 
-func (a Authenticator) Signup(w http.ResponseWriter, r *http.Request) {
+func (a AuthRouter) Signup(w http.ResponseWriter, r *http.Request) {
 	var signupRequest models.SignupRequest
 	loginRequest, err := utils.ParseJSON(signupRequest, r)
 
