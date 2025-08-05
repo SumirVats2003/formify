@@ -3,18 +3,21 @@ package routes
 import (
 	"net/http"
 
-	"github.com/SumirVats2003/formify/backend/internal/app"
+	"github.com/SumirVats2003/formify/backend/internal/api"
 	"github.com/SumirVats2003/formify/backend/internal/models"
 	"github.com/SumirVats2003/formify/backend/utils"
 	"github.com/go-chi/chi/v5"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type AuthRouter struct {
-	app *app.App
+	db *mongo.Database
+	u  api.UserApi
 }
 
-func InitAuthRoutes(app *app.App) chi.Router {
-	a := AuthRouter{app: app}
+func InitAuthRoutes(db *mongo.Database) chi.Router {
+	u := api.InitUserApi(db)
+	a := AuthRouter{db: db, u: u}
 	r := chi.NewRouter()
 	r.Get("/login", a.Login)
 	r.Post("/signup", a.Signup)
@@ -29,19 +32,15 @@ func (a AuthRouter) Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	a.app.Logger.Println(loginRequest)
 	// redirect to api and create a database layer
 }
 
 func (a AuthRouter) Signup(w http.ResponseWriter, r *http.Request) {
 	var signupRequest models.SignupRequest
-	loginRequest, err := utils.ParseJSON(signupRequest, r)
+	signupRequest, err := utils.ParseJSON(signupRequest, r)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	a.app.Logger.Println(loginRequest)
 }

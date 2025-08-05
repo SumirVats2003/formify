@@ -3,19 +3,34 @@ package api
 import (
 	"time"
 
-	"github.com/SumirVats2003/formify/backend/internal/database"
+	"github.com/SumirVats2003/formify/backend/internal/dbconnector"
 	"github.com/SumirVats2003/formify/backend/internal/models"
 	"github.com/SumirVats2003/formify/backend/utils"
 	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var jwtSecret = []byte(utils.GetEnv("JWT_SECRET", ""))
 
-func LoginApi(loginRequest models.LoginRequest) (string, error) {
-	passwordHash := hashPassword(loginRequest)
+type UserApi struct {
+	db            *mongo.Database
+	userConnector dbconnector.UserDBConnector
+}
 
-	isAuthenticated, err := database.LoginUser(loginRequest.Email, passwordHash)
+func InitUserApi(db *mongo.Database) UserApi {
+	u := dbconnector.InitUserConnector(db)
+	userApi := UserApi{db: db, userConnector: u}
+	return userApi
+}
+
+func (u UserApi) LoginApi(loginRequest models.LoginRequest) (string, error) {
+	passwordHash, err := hashPassword(loginRequest.Password)
+	if err != nil {
+		return "", err
+	}
+
+	isAuthenticated, err := u.userConnector.LoginUser(loginRequest.Email, passwordHash)
 	if err != nil {
 		return "", err
 	}
@@ -31,15 +46,21 @@ func LoginApi(loginRequest models.LoginRequest) (string, error) {
 	return userToken, nil
 }
 
-func Signup(signupRequest models.SignupRequest) (string, error) {
-	// return signup token
+func (u UserApi) Signup(signupRequest models.SignupRequest) (string, error) {
+	hashedPassword, err := hashPassword(signupRequest.Password)
+	if err != nil {
+		return "", err
+	}
+
+	signupRequest.Password = hashedPassword
+	u.userConnector.SignupUser(signupRequest)
 	return "", nil
 }
 
 func createToken(email string) (string, error) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": email,
-		"iss": "todo-app",
+		"iss": "formify",
 		"exp": time.Now().Add(time.Hour).Unix(),
 		"iat": time.Now().Unix(),
 	})
@@ -52,10 +73,10 @@ func createToken(email string) (string, error) {
 	return tokenString, nil
 }
 
-func hashPassword(loginRequest models.LoginRequest) string {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(loginRequest.Password), 14)
+func hashPassword(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return string(hashedPassword)
+	return string(hashedPassword), nil
 }
