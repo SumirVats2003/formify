@@ -13,24 +13,24 @@ import (
 
 var jwtSecret = []byte(utils.GetEnv("JWT_SECRET", ""))
 
-type UserApi struct {
+type AuthApi struct {
 	db            *mongo.Database
-	userConnector dbconnector.UserDBConnector
+	authConnector dbconnector.AuthConnector
 }
 
-func InitUserApi(db *mongo.Database) UserApi {
-	u := dbconnector.InitUserConnector(db)
-	userApi := UserApi{db: db, userConnector: u}
+func InitAuthApi(db *mongo.Database) AuthApi {
+	u := dbconnector.InitAuthConnector(db)
+	userApi := AuthApi{db: db, authConnector: u}
 	return userApi
 }
 
-func (u UserApi) LoginApi(loginRequest models.LoginRequest) (string, error) {
+func (a AuthApi) LoginApi(loginRequest models.LoginRequest) (string, error) {
 	passwordHash, err := hashPassword(loginRequest.Password)
 	if err != nil {
 		return "", err
 	}
 
-	isAuthenticated, err := u.userConnector.LoginUser(loginRequest.Email, passwordHash)
+	isAuthenticated, err := a.authConnector.LoginUser(loginRequest.Email, passwordHash)
 	if err != nil {
 		return "", err
 	}
@@ -46,14 +46,14 @@ func (u UserApi) LoginApi(loginRequest models.LoginRequest) (string, error) {
 	return userToken, nil
 }
 
-func (u UserApi) Signup(signupRequest models.SignupRequest) (string, error) {
+func (a AuthApi) Signup(signupRequest models.SignupRequest) (string, error) {
 	hashedPassword, err := hashPassword(signupRequest.Password)
 	if err != nil {
 		return "", err
 	}
 
 	signupRequest.Password = hashedPassword
-	u.userConnector.SignupUser(signupRequest)
+	a.authConnector.SignupUser(signupRequest)
 	return "", nil
 }
 

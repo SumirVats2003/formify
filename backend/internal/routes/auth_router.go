@@ -12,12 +12,12 @@ import (
 
 type AuthRouter struct {
 	db *mongo.Database
-	u  api.UserApi
+	a  api.AuthApi
 }
 
 func InitAuthRoutes(db *mongo.Database) chi.Router {
-	u := api.InitUserApi(db)
-	a := AuthRouter{db: db, u: u}
+	authApi := api.InitAuthApi(db)
+	a := AuthRouter{db: db, a: authApi}
 	r := chi.NewRouter()
 	r.Get("/login", a.Login)
 	r.Post("/signup", a.Signup)

@@ -5,19 +5,19 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-type UserDBConnector struct {
+type AuthConnector struct {
 	db *mongo.Database
 }
 
-func InitUserConnector(db *mongo.Database) UserDBConnector {
-	u := UserDBConnector{db: db}
-	return u
+func InitAuthConnector(db *mongo.Database) AuthConnector {
+	a := AuthConnector{db: db}
+	return a
 }
 
-func (u UserDBConnector) LoginUser(email, passwordHash string) (bool, error) {
+func (a AuthConnector) LoginUser(email, passwordHash string) (bool, error) {
 	return false, nil
 }
 
-func (u UserDBConnector) SignupUser(signupRequest models.SignupRequest) (bool, error) {
+func (a AuthConnector) SignupUser(signupRequest models.SignupRequest) (bool, error) {
 	return false, nil
 }
