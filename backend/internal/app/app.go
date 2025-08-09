@@ -17,13 +17,12 @@ type App struct {
 	Ctx    context.Context
 }
 
-func InitApp() (*App, error) {
+func InitApp(ctx context.Context) (*App, error) {
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
-	ctx, _ := context.WithCancel(context.Background())
 
 	dbclient, err := db.ConnectDB()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	app := &App{

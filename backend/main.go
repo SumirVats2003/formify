@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -16,8 +17,11 @@ func main() {
 		log.Println("Warning: .env file not found, using empty variables")
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	port := ":8080"
-	app, err := app.InitApp()
+	app, err := app.InitApp(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -42,6 +46,5 @@ func main() {
 		app.Logger.Fatal()
 	}
 
-	defer app.DB.Disconnect(app.Ctx)
-	defer app.Ctx.Done()
+	defer app.DB.Disconnect(ctx)
 }
