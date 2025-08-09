@@ -2,7 +2,7 @@ package dbconnector
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/SumirVats2003/formify/backend/internal/models"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -22,17 +22,36 @@ func InitAuthConnector(db *mongo.Database, ctx context.Context) AuthConnector {
 }
 
 func (a AuthConnector) LoginUser(email string) *mongo.SingleResult {
-	filter := bson.D{{"email", email}}
-	return a.db.Collection(a.collectionName).FindOne(a.ctx, filter)
+	return findUser(a.db, a.ctx, email)
 }
 
-func (a AuthConnector) SignupUser(signupRequest models.SignupRequest) (bool, error) {
+func (a AuthConnector) SignupUser(signupRequest models.SignupRequest) (models.User, error) {
+	id := bson.NewObjectID()
 	coll := a.db.Collection(a.collectionName)
 
-	_, err := coll.InsertOne(a.ctx, signupRequest)
-	if err != nil {
-		fmt.Println(err)
-		return false, err
+	var existingUser struct {
+		Email string `bson:"email"`
 	}
-	return true, nil
+	err := coll.FindOne(a.ctx, bson.M{"user.email": signupRequest.Email}).Decode(&existingUser)
+	if err == nil {
+		return models.User{}, errors.New("user already exists")
+	} else if err != mongo.ErrNoDocuments {
+		return models.User{}, err
+	}
+
+	_, err = coll.InsertOne(a.ctx, bson.M{"_id": id, "userId": id.Hex(), "user": signupRequest})
+	if err != nil {
+		return models.User{}, err
+	}
+
+	userDoc := models.User{
+		UserId: id.Hex(),
+		User:   signupRequest,
+	}
+	return userDoc, nil
+}
+
+func findUser(db *mongo.Database, ctx context.Context, email string) *mongo.SingleResult {
+	filter := bson.D{{"user.email", email}}
+	return db.Collection("users").FindOne(ctx, filter)
 }

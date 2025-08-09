@@ -65,7 +65,8 @@ func (a AuthRouter) Signup(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]bool{
-		"success": success,
+	json.NewEncoder(w).Encode(map[string]any{
+		"userId": success.UserId,
+		"user":   success.User,
 	})
 }

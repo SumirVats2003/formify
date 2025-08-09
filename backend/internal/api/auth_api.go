@@ -48,10 +48,10 @@ func (a AuthApi) Login(loginRequest models.LoginRequest) (string, error) {
 	return userToken, nil
 }
 
-func (a AuthApi) Signup(signupRequest models.SignupRequest) (bool, error) {
+func (a AuthApi) Signup(signupRequest models.SignupRequest) (models.User, error) {
 	hashedPassword, err := hashPassword(signupRequest.Password)
 	if err != nil {
-		return false, err
+		return models.User{}, err
 	}
 
 	signupRequest.Password = hashedPassword

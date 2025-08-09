@@ -1,6 +1,7 @@
 package models
 
 type LoginRequest struct {
+	Id       string `json:"userId"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -10,4 +11,9 @@ type SignupRequest struct {
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 	CreatedAt int    `json:"created_at"`
+}
+
+type User struct {
+	UserId string        `json:"userId"`
+	User   SignupRequest `json:"user"`
 }
