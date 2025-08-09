@@ -7,13 +7,15 @@ import (
 
 func SetupRoutes(app *app.App) *chi.Mux {
 	r := chi.NewRouter()
+	db := app.DB.Database("formify")
 
 	// heartbeat
 	r.Get("/heartbeat", app.Heartbeat)
 
 	// route groups
-	authRouter := InitAuthRoutes(app.DB)
+	authRouter := InitAuthRoutes(db, app.Ctx)
 
 	r.Mount("/auth", authRouter)
+
 	return r
 }

@@ -19,6 +19,7 @@ func ConnectDB() (*mongo.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	client.Database("formify")
 	log.Println("Connected to database...")
 
 	return client, nil

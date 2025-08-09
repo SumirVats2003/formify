@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/SumirVats2003/formify/backend/internal/api"
@@ -11,13 +13,13 @@ import (
 )
 
 type AuthRouter struct {
-	db *mongo.Database
-	a  api.AuthApi
+	db      *mongo.Database
+	authApi api.AuthApi
 }
 
-func InitAuthRoutes(db *mongo.Database) chi.Router {
-	authApi := api.InitAuthApi(db)
-	a := AuthRouter{db: db, a: authApi}
+func InitAuthRoutes(db *mongo.Database, ctx context.Context) chi.Router {
+	authApi := api.InitAuthApi(db, ctx)
+	a := AuthRouter{db: db, authApi: authApi}
 	r := chi.NewRouter()
 	r.Get("/login", a.Login)
 	r.Post("/signup", a.Signup)
@@ -32,7 +34,18 @@ func (a AuthRouter) Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	// redirect to api and create a database layer
+
+	token, err := a.authApi.Login(loginRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{
+		"token": token,
+	})
 }
 
 func (a AuthRouter) Signup(w http.ResponseWriter, r *http.Request) {
@@ -43,4 +56,16 @@ func (a AuthRouter) Signup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	success, err := a.authApi.Signup(signupRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]bool{
+		"success": success,
+	})
 }

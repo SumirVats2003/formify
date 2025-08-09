@@ -13,26 +13,23 @@ import (
 
 type App struct {
 	Logger *log.Logger
-	DB     *mongo.Database
+	DB     *mongo.Client
+	Ctx    context.Context
 }
 
 func InitApp() (*App, error) {
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	ctx, _ := context.WithCancel(context.Background())
 
 	dbclient, err := db.ConnectDB()
 	if err != nil {
 		panic(err)
 	}
 
-	defer func() {
-		if err := dbclient.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
-
 	app := &App{
 		Logger: logger,
-		DB:     dbclient.Database("formify"),
+		DB:     dbclient,
+		Ctx:    ctx,
 	}
 	return app, nil
 }

@@ -1,6 +1,8 @@
 package api
 
 import (
+	"context"
+	"errors"
 	"time"
 
 	"github.com/SumirVats2003/formify/backend/internal/dbconnector"
@@ -18,24 +20,24 @@ type AuthApi struct {
 	authConnector dbconnector.AuthConnector
 }
 
-func InitAuthApi(db *mongo.Database) AuthApi {
-	u := dbconnector.InitAuthConnector(db)
+func InitAuthApi(db *mongo.Database, ctx context.Context) AuthApi {
+	u := dbconnector.InitAuthConnector(db, ctx)
 	userApi := AuthApi{db: db, authConnector: u}
 	return userApi
 }
 
-func (a AuthApi) LoginApi(loginRequest models.LoginRequest) (string, error) {
-	passwordHash, err := hashPassword(loginRequest.Password)
+func (a AuthApi) Login(loginRequest models.LoginRequest) (string, error) {
+	databaseDocument := a.authConnector.LoginUser(loginRequest.Email)
+
+	var user models.SignupRequest
+	err := databaseDocument.Decode(&user)
 	if err != nil {
-		return "", err
+		return "", errors.New("Invalid credentials")
 	}
 
-	isAuthenticated, err := a.authConnector.LoginUser(loginRequest.Email, passwordHash)
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
 		return "", err
-	}
-	if !isAuthenticated {
-		return "", nil
 	}
 
 	userToken, err := createToken(loginRequest.Email)
@@ -46,15 +48,15 @@ func (a AuthApi) LoginApi(loginRequest models.LoginRequest) (string, error) {
 	return userToken, nil
 }
 
-func (a AuthApi) Signup(signupRequest models.SignupRequest) (string, error) {
+func (a AuthApi) Signup(signupRequest models.SignupRequest) (bool, error) {
 	hashedPassword, err := hashPassword(signupRequest.Password)
 	if err != nil {
-		return "", err
+		return false, err
 	}
 
 	signupRequest.Password = hashedPassword
-	a.authConnector.SignupUser(signupRequest)
-	return "", nil
+	success, err := a.authConnector.SignupUser(signupRequest)
+	return success, err
 }
 
 func createToken(email string) (string, error) {

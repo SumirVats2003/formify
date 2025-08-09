@@ -37,4 +37,7 @@ func main() {
 	if err != nil {
 		app.Logger.Fatal()
 	}
+
+	defer app.DB.Disconnect(app.Ctx)
+	defer app.Ctx.Done()
 }
