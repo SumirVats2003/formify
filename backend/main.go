@@ -43,7 +43,7 @@ func main() {
 
 	err = server.ListenAndServe()
 	if err != nil {
-		app.Logger.Fatal()
+		app.Logger.Fatal(err)
 	}
 
 	defer app.DB.Disconnect(ctx)
