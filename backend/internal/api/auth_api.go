@@ -55,6 +55,7 @@ func (a AuthApi) Signup(signupRequest models.SignupRequest) (models.User, error)
 	}
 
 	signupRequest.Password = hashedPassword
+	signupRequest.CreatedAt = time.Now().UnixMilli()
 	success, err := a.authConnector.SignupUser(signupRequest)
 	return success, err
 }
