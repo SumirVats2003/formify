@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/SumirVats2003/formify/backend/internal/dbconnector"
@@ -13,14 +14,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtSecret = []byte(utils.GetEnv("JWT_SECRET", ""))
-
 type AuthApi struct {
 	db            *mongo.Database
 	authConnector dbconnector.AuthConnector
 }
 
+var jwtSecret string
+
 func InitAuthApi(db *mongo.Database, ctx context.Context) AuthApi {
+	jwtSecret = utils.GetEnv("JWT_SECRET", "")
+	if jwtSecret == "" {
+		return AuthApi{}
+	}
 	u := dbconnector.InitAuthConnector(db, ctx)
 	userApi := AuthApi{db: db, authConnector: u}
 	return userApi
@@ -29,13 +34,13 @@ func InitAuthApi(db *mongo.Database, ctx context.Context) AuthApi {
 func (a AuthApi) Login(loginRequest models.LoginRequest) (string, error) {
 	databaseDocument := a.authConnector.LoginUser(loginRequest.Email)
 
-	var user models.SignupRequest
+	var user models.User
 	err := databaseDocument.Decode(&user)
 	if err != nil {
 		return "", errors.New("Invalid credentials")
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.User.Password), []byte(loginRequest.Password))
 	if err != nil {
 		return "", err
 	}
@@ -68,7 +73,7 @@ func createToken(email string) (string, error) {
 		"iat": time.Now().Unix(),
 	})
 
-	tokenString, err := claims.SignedString(jwtSecret)
+	tokenString, err := claims.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return "", err
 	}
