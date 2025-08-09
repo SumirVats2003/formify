@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/SumirVats2003/formify/backend/db"
+	"github.com/SumirVats2003/formify/backend/database"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -20,7 +20,7 @@ type App struct {
 func InitApp(ctx context.Context) (*App, error) {
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
-	dbclient, err := db.ConnectDB()
+	dbclient, err := database.ConnectDB()
 	if err != nil {
 		return nil, err
 	}
