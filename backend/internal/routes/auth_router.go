@@ -17,13 +17,18 @@ type AuthRouter struct {
 	authApi api.AuthApi
 }
 
-func InitAuthRoutes(db *mongo.Database, ctx context.Context) chi.Router {
-	authApi := api.InitAuthApi(db, ctx)
+func InitAuthRoutes(db *mongo.Database, ctx context.Context) (chi.Router, error) {
+	authApi, err := api.InitAuthApi(db, ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
 	a := AuthRouter{db: db, authApi: authApi}
 	r := chi.NewRouter()
 	r.Get("/login", a.Login)
 	r.Post("/signup", a.Signup)
-	return r
+	return r, nil
 }
 
 func (a AuthRouter) Login(w http.ResponseWriter, r *http.Request) {

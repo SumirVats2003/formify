@@ -22,7 +22,11 @@ func main() {
 		panic(err)
 	}
 
-	r := routes.SetupRoutes(app)
+	r, err := routes.SetupRoutes(app)
+	if err != nil {
+		panic(err)
+	}
+
 	server := &http.Server{
 		Addr:         fmt.Sprintf("%s", port),
 		Handler:      r,

@@ -5,7 +5,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func SetupRoutes(app *app.App) *chi.Mux {
+func SetupRoutes(app *app.App) (*chi.Mux, error) {
 	r := chi.NewRouter()
 	db := app.DB.Database("formify")
 
@@ -13,9 +13,12 @@ func SetupRoutes(app *app.App) *chi.Mux {
 	r.Get("/heartbeat", app.Heartbeat)
 
 	// route groups
-	authRouter := InitAuthRoutes(db, app.Ctx)
+	authRouter, err := InitAuthRoutes(db, app.Ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	r.Mount("/auth", authRouter)
 
-	return r
+	return r, nil
 }

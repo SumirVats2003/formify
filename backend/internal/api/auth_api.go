@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/SumirVats2003/formify/backend/internal/dbconnector"
@@ -21,14 +20,15 @@ type AuthApi struct {
 
 var jwtSecret string
 
-func InitAuthApi(db *mongo.Database, ctx context.Context) AuthApi {
+func InitAuthApi(db *mongo.Database, ctx context.Context) (AuthApi, error) {
 	jwtSecret = utils.GetEnv("JWT_SECRET", "")
 	if jwtSecret == "" {
-		return AuthApi{}
+		return AuthApi{}, errors.New("Error: Could not load the JWT Secret key. The env is not set correctly")
 	}
+
 	u := dbconnector.InitAuthConnector(db, ctx)
 	userApi := AuthApi{db: db, authConnector: u}
-	return userApi
+	return userApi, nil
 }
 
 func (a AuthApi) Login(loginRequest models.LoginRequest) (string, error) {
