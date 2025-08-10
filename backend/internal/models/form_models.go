@@ -25,6 +25,14 @@ type FormResponse struct {
 	ValidityTimestamp int64      `json:"validity_timestamp"`
 }
 
+type FormSummary struct {
+	Id                string `json:"id"`
+	Title             string `json:"title"`
+	CreatorId         string `json:"creator_id"`
+	AttachedSheet     string `json:"sheet_url"`
+	ValidityTimestamp int64  `json:"validity_timestamp"`
+}
+
 type Question struct {
 	Id         string   `json:"id"`
 	Title      string   `json:"title"`

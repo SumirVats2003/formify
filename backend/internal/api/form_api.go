@@ -25,7 +25,6 @@ func (f FormApi) CreateForm(userId string, formRequest models.FormRequest) (stri
 	questionIds := make([]string, 0)
 	for _, question := range formRequest.Questions {
 		qId, err := f.questionRepository.CreateQuestion(question)
-
 		if err != nil {
 			return "", err
 		}
@@ -42,7 +41,6 @@ func (f FormApi) CreateForm(userId string, formRequest models.FormRequest) (stri
 	}
 
 	formId, err := f.formRepository.CreateForm(form)
-
 	if err != nil {
 		return "", err
 	}
@@ -58,11 +56,9 @@ func (f FormApi) GetFormById(formId string) (models.FormResponse, error) {
 	formQuestions := make([]models.Question, 0)
 	for _, questionId := range form.QuestionIds {
 		question, err := f.questionRepository.GetQuestionById(questionId)
-
 		if err != nil {
 			return models.FormResponse{}, err
 		}
-
 		formQuestions = append(formQuestions, question)
 	}
 
@@ -74,7 +70,6 @@ func (f FormApi) GetFormById(formId string) (models.FormResponse, error) {
 		AttachedSheet:     form.AttachedSheet,
 		ValidityTimestamp: form.ValidityTimestamp,
 	}
-
 	return formResponse, nil
 }
 
@@ -95,6 +90,13 @@ func (f FormApi) DeleteFormById(formId string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
 	return deletionResult, nil
+}
+
+func (f FormApi) GetAllUserFormSummaries(userId string) ([]models.FormSummary, error) {
+	formSummaries, err := f.formRepository.GetAllUserFormSummaries(userId)
+	if err != nil {
+		return nil, err
+	}
+	return formSummaries, nil
 }
