@@ -53,3 +53,25 @@ func (f FormRepository) GetFormById(formId string) (models.Form, error) {
 
 	return form, nil
 }
+
+func (f FormRepository) GetFormQuestionIds(formId string) ([]string, error) {
+	form, err := f.GetFormById(formId)
+	questionIds := make([]string, 0)
+	if err != nil {
+		return questionIds, err
+	}
+
+	questionIds = form.QuestionIds
+	return questionIds, err
+}
+
+func (f FormRepository) DeleteFormById(formId string) (bool, error) {
+	filter := bson.D{{"id", formId}}
+	_, err := f.db.Collection(f.collectionName).DeleteOne(f.ctx, filter)
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

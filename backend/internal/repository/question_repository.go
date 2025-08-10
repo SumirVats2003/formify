@@ -61,3 +61,14 @@ func (q QuestionRepository) GetQuestionById(questionId string) (models.Question,
 	}
 	return question, nil
 }
+
+func (q QuestionRepository) DeleteQuestionById(questionId string) (bool, error) {
+	filter := bson.D{{"id", questionId}}
+	_, err := q.db.Collection(q.collectionName).DeleteOne(q.ctx, filter)
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

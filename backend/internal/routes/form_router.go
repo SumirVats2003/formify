@@ -70,8 +70,21 @@ func (f FormRouter) GetFormById(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]models.FormResponse{
 		"form": form,
 	})
-
 }
 
-func (f FormRouter) DeleteFormById(w http.ResponseWriter, r *http.Request)  {}
+func (f FormRouter) DeleteFormById(w http.ResponseWriter, r *http.Request) {
+	formId := chi.URLParam(r, "formId")
+
+	deleted, err := f.formApi.DeleteFormById(formId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]bool{
+		"deleted": deleted,
+	})
+}
+
 func (f FormRouter) GetAllUserForms(w http.ResponseWriter, r *http.Request) {}

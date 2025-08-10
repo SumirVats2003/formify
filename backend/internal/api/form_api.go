@@ -77,3 +77,24 @@ func (f FormApi) GetFormById(formId string) (models.FormResponse, error) {
 
 	return formResponse, nil
 }
+
+func (f FormApi) DeleteFormById(formId string) (bool, error) {
+	questionIds, err := f.formRepository.GetFormQuestionIds(formId)
+	if err != nil {
+		return false, err
+	}
+
+	for _, questionId := range questionIds {
+		_, err := f.questionRepository.DeleteQuestionById(questionId)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	deletionResult, err := f.formRepository.DeleteFormById(formId)
+	if err != nil {
+		return false, err
+	}
+
+	return deletionResult, nil
+}
