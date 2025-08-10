@@ -4,7 +4,7 @@ type Form struct {
 	Id                string   `json:"id"`
 	Title             string   `json:"title"`
 	CreatorId         string   `json:"creatorId"`
-	Questions         []string `json:"questions"`
+	QuestionIds       []string `json:"questions"`
 	AttachedSheet     string   `json:"sheetUrl"`
 	ValidityTimestamp int64    `json:"validityTimestamp"`
 }
@@ -18,7 +18,6 @@ type FormRequest struct {
 
 type Question struct {
 	Id            string   `json:"id"`
-	FormId        string   `json:"formId"`
 	QuestionTitle string   `json:"title"`
 	AnswerType    string   `json:"answerType"`
 	Required      bool     `json:"required"`

@@ -3,17 +3,48 @@ package api
 import (
 	"context"
 
+	"github.com/SumirVats2003/formify/backend/internal/models"
 	"github.com/SumirVats2003/formify/backend/internal/repository"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type FormApi struct {
-	db             *mongo.Database
-	formRepository repository.FormRepository
+	db                 *mongo.Database
+	formRepository     repository.FormRepository
+	questionRepository repository.QuestionRepository
 }
 
 func InitFormApi(db *mongo.Database, ctx context.Context) (FormApi, error) {
 	f := repository.InitFormRepository(db, ctx)
-	formApi := FormApi{db: db, formRepository: f}
+	q := repository.InitQuestionRepository(db, ctx)
+	formApi := FormApi{db: db, formRepository: f, questionRepository: q}
 	return formApi, nil
+}
+
+func (f FormApi) CreateForm(userId string, formRequest models.FormRequest) (string, error) {
+	questionIds := make([]string, 0)
+	for _, question := range formRequest.Questions {
+		qId, err := f.questionRepository.CreateQuestion(question)
+
+		if err != nil {
+			return "", err
+		}
+		questionIds = append(questionIds, qId)
+	}
+
+	form := models.Form{
+		Id:                "",
+		Title:             formRequest.Title,
+		CreatorId:         formRequest.CreatorId,
+		QuestionIds:       questionIds,
+		AttachedSheet:     "",
+		ValidityTimestamp: formRequest.ValidityTimestamp,
+	}
+
+	formId, err := f.formRepository.CreateForm(form)
+
+	if err != nil {
+		return "", err
+	}
+	return formId, nil
 }

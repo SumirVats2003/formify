@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/SumirVats2003/formify/backend/internal/models"
+	"github.com/SumirVats2003/formify/backend/utils"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -26,7 +27,7 @@ func (a AuthRepository) LoginUser(email string) *mongo.SingleResult {
 }
 
 func (a AuthRepository) SignupUser(signupRequest models.SignupRequest) (models.User, error) {
-	id := bson.NewObjectID()
+	id := utils.GenerateNewMongoId()
 	coll := a.db.Collection(a.collectionName)
 
 	var existingUser struct {
