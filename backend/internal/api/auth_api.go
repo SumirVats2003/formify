@@ -15,7 +15,7 @@ import (
 
 type AuthApi struct {
 	db            *mongo.Database
-	authConnector repository.AuthConnector
+	authConnector repository.AuthRepository
 }
 
 var jwtSecret string
@@ -26,7 +26,7 @@ func InitAuthApi(db *mongo.Database, ctx context.Context) (AuthApi, error) {
 		return AuthApi{}, errors.New("Error: Could not load the JWT Secret key. The env is not set correctly")
 	}
 
-	u := repository.InitAuthConnector(db, ctx)
+	u := repository.InitAuthRepository(db, ctx)
 	userApi := AuthApi{db: db, authConnector: u}
 	return userApi, nil
 }

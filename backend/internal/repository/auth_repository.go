@@ -9,23 +9,23 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-type AuthConnector struct {
+type AuthRepository struct {
 	db             *mongo.Database
 	collectionName string
 	ctx            context.Context
 }
 
-func InitAuthConnector(db *mongo.Database, ctx context.Context) AuthConnector {
-	a := AuthConnector{db: db, ctx: ctx}
+func InitAuthRepository(db *mongo.Database, ctx context.Context) AuthRepository {
+	a := AuthRepository{db: db, ctx: ctx}
 	a.collectionName = "users"
 	return a
 }
 
-func (a AuthConnector) LoginUser(email string) *mongo.SingleResult {
+func (a AuthRepository) LoginUser(email string) *mongo.SingleResult {
 	return findUser(a.db, a.ctx, email)
 }
 
-func (a AuthConnector) SignupUser(signupRequest models.SignupRequest) (models.User, error) {
+func (a AuthRepository) SignupUser(signupRequest models.SignupRequest) (models.User, error) {
 	id := bson.NewObjectID()
 	coll := a.db.Collection(a.collectionName)
 
