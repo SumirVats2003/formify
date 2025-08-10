@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/SumirVats2003/formify/backend/internal/models"
 	"github.com/SumirVats2003/formify/backend/utils"
@@ -28,10 +27,7 @@ func (f FormRepository) CreateForm(form models.Form) (string, error) {
 	coll := f.db.Collection(f.collectionName)
 	form.Id = id.Hex()
 
-	_, err := coll.InsertOne(f.ctx, bson.M{
-		"_id":  id,
-		"form": form,
-	})
+	_, err := coll.InsertOne(f.ctx, form)
 
 	if err != nil {
 		return "", err
@@ -41,7 +37,7 @@ func (f FormRepository) CreateForm(form models.Form) (string, error) {
 }
 
 func (f FormRepository) GetFormById(formId string) (models.Form, error) {
-	filter := bson.D{{"form.id", formId}}
+	filter := bson.D{{"id", formId}}
 	document := f.db.Collection(f.collectionName).FindOne(f.ctx, filter)
 
 	if document == nil {
@@ -51,7 +47,6 @@ func (f FormRepository) GetFormById(formId string) (models.Form, error) {
 	var form models.Form
 	err := document.Decode(&form)
 
-	fmt.Println(form)
 	if err != nil {
 		return models.Form{}, err
 	}

@@ -37,10 +37,7 @@ func (q QuestionRepository) CreateQuestion(question models.QuestionRequest) (str
 		Options:    question.Options,
 	}
 
-	_, err := coll.InsertOne(q.ctx, bson.M{
-		"_id":      id,
-		"question": questionModel,
-	})
+	_, err := coll.InsertOne(q.ctx, questionModel)
 
 	if err != nil {
 		return "", err
@@ -49,7 +46,7 @@ func (q QuestionRepository) CreateQuestion(question models.QuestionRequest) (str
 }
 
 func (q QuestionRepository) GetQuestionById(questionId string) (models.Question, error) {
-	filter := bson.D{{"question.id", questionId}}
+	filter := bson.D{{"id", questionId}}
 	document := q.db.Collection(q.collectionName).FindOne(q.ctx, filter)
 
 	if document == nil {
