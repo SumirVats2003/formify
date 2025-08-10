@@ -48,3 +48,32 @@ func (f FormApi) CreateForm(userId string, formRequest models.FormRequest) (stri
 	}
 	return formId, nil
 }
+
+func (f FormApi) GetFormById(formId string) (models.FormResponse, error) {
+	form, err := f.formRepository.GetFormById(formId)
+	if err != nil {
+		return models.FormResponse{}, err
+	}
+
+	formQuestions := make([]models.Question, 0)
+	for _, questionId := range form.QuestionIds {
+		question, err := f.questionRepository.GetQuestionById(questionId)
+
+		if err != nil {
+			return models.FormResponse{}, err
+		}
+
+		formQuestions = append(formQuestions, question)
+	}
+
+	formResponse := models.FormResponse{
+		Id:                form.Id,
+		Title:             form.Title,
+		CreatorId:         form.CreatorId,
+		Questions:         formQuestions,
+		AttachedSheet:     form.AttachedSheet,
+		ValidityTimestamp: form.ValidityTimestamp,
+	}
+
+	return formResponse, nil
+}

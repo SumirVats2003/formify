@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/SumirVats2003/formify/backend/internal/models"
 	"github.com/SumirVats2003/formify/backend/utils"
@@ -36,4 +38,23 @@ func (f FormRepository) CreateForm(form models.Form) (string, error) {
 	}
 
 	return id.Hex(), nil
+}
+
+func (f FormRepository) GetFormById(formId string) (models.Form, error) {
+	filter := bson.D{{"form.id", formId}}
+	document := f.db.Collection(f.collectionName).FindOne(f.ctx, filter)
+
+	if document == nil {
+		return models.Form{}, errors.New("Form Not Found")
+	}
+
+	var form models.Form
+	err := document.Decode(&form)
+
+	fmt.Println(form)
+	if err != nil {
+		return models.Form{}, err
+	}
+
+	return form, nil
 }

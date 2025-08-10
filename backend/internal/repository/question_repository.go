@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/SumirVats2003/formify/backend/internal/models"
 	"github.com/SumirVats2003/formify/backend/utils"
@@ -28,14 +29,38 @@ func (q QuestionRepository) CreateQuestion(question models.QuestionRequest) (str
 	id := utils.GenerateNewMongoId()
 	coll := q.db.Collection(q.collectionName)
 
+	questionModel := models.Question{
+		Id:         id.Hex(),
+		Title:      question.Title,
+		AnswerType: question.AnswerType,
+		Required:   question.Required,
+		Options:    question.Options,
+	}
+
 	_, err := coll.InsertOne(q.ctx, bson.M{
-		"_id":        id,
-		"id": id.Hex(),
-		"question":   question,
+		"_id":      id,
+		"question": questionModel,
 	})
 
 	if err != nil {
 		return "", err
 	}
 	return id.Hex(), nil
+}
+
+func (q QuestionRepository) GetQuestionById(questionId string) (models.Question, error) {
+	filter := bson.D{{"question.id", questionId}}
+	document := q.db.Collection(q.collectionName).FindOne(q.ctx, filter)
+
+	if document == nil {
+		return models.Question{}, errors.New("Question Not Found")
+	}
+
+	var question models.Question
+	err := document.Decode(&question)
+
+	if err != nil {
+		return models.Question{}, err
+	}
+	return question, nil
 }
