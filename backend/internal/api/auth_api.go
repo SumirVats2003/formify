@@ -15,7 +15,7 @@ import (
 
 type AuthApi struct {
 	db            *mongo.Database
-	authConnector repository.AuthRepository
+	authRepository repository.AuthRepository
 }
 
 var jwtSecret string
@@ -27,12 +27,12 @@ func InitAuthApi(db *mongo.Database, ctx context.Context) (AuthApi, error) {
 	}
 
 	u := repository.InitAuthRepository(db, ctx)
-	userApi := AuthApi{db: db, authConnector: u}
+	userApi := AuthApi{db: db, authRepository: u}
 	return userApi, nil
 }
 
 func (a AuthApi) Login(loginRequest models.LoginRequest) (string, error) {
-	databaseDocument := a.authConnector.LoginUser(loginRequest.Email)
+	databaseDocument := a.authRepository.LoginUser(loginRequest.Email)
 
 	var user models.User
 	err := databaseDocument.Decode(&user)
@@ -61,7 +61,7 @@ func (a AuthApi) Signup(signupRequest models.SignupRequest) (models.User, error)
 
 	signupRequest.Password = hashedPassword
 	signupRequest.CreatedAt = utils.GetCurrentTimestamp()
-	success, err := a.authConnector.SignupUser(signupRequest)
+	success, err := a.authRepository.SignupUser(signupRequest)
 	return success, err
 }
 
