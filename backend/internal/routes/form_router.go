@@ -17,19 +17,15 @@ type FormRouter struct {
 	formApi api.FormApi
 }
 
-func InitFormRoutes(db *mongo.Database, ctx context.Context) (chi.Router, error) {
-	formApi, err := api.InitFormApi(db, ctx)
-	if err != nil {
-		return nil, err
-	}
-
+func InitFormRoutes(db *mongo.Database, ctx context.Context) chi.Router {
+	formApi := api.InitFormApi(db, ctx)
 	f := FormRouter{db: db, formApi: formApi}
 	r := chi.NewRouter()
 	r.Post("/user/{userId}/create-form", f.CreateForm)
 	r.Get("/{formId}", f.GetFormById)
 	r.Delete("/{formId}", f.DeleteFormById)
 	r.Get("/user/{userId}/all-form-summaries", f.GetAllUserFormSummaries)
-	return r, nil
+	return r
 }
 
 func (f FormRouter) CreateForm(w http.ResponseWriter, r *http.Request) {

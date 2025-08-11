@@ -17,10 +17,12 @@ func SetupRoutes(app *app.App) (*chi.Mux, error) {
 	if err != nil {
 		return nil, err
 	}
-	formRouter, err := InitFormRoutes(db, app.Ctx)
+	formRouter := InitFormRoutes(db, app.Ctx)
+	questionRouter := InitQuestionRoutes(db, app.Ctx)
 
 	r.Mount("/auth", authRouter)
 	r.Mount("/form", formRouter)
+	r.Mount("/question", questionRouter)
 
 	return r, nil
 }

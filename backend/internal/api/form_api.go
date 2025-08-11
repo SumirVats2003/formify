@@ -14,11 +14,11 @@ type FormApi struct {
 	questionRepository repository.QuestionRepository
 }
 
-func InitFormApi(db *mongo.Database, ctx context.Context) (FormApi, error) {
+func InitFormApi(db *mongo.Database, ctx context.Context) FormApi {
 	f := repository.InitFormRepository(db, ctx)
 	q := repository.InitQuestionRepository(db, ctx)
 	formApi := FormApi{db: db, formRepository: f, questionRepository: q}
-	return formApi, nil
+	return formApi
 }
 
 func (f FormApi) CreateForm(userId string, formRequest models.FormRequest) (string, error) {

@@ -88,3 +88,31 @@ func (f FormRepository) GetAllUserFormSummaries(userId string) ([]models.FormSum
 
 	return formSummaries, nil
 }
+
+func (f FormRepository) AddQuestionToForm(formId, questionId string) error {
+	filter := bson.D{{Key: "id", Value: formId}}
+	update := bson.D{
+		{Key: "$push", Value: bson.D{
+			{Key: "questionids", Value: questionId},
+		}},
+	}
+	_, err := f.db.Collection(f.collectionName).UpdateOne(f.ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (f FormRepository) RemoveQuestionFromForm(questionId, formId string) error {
+	filter := bson.D{{Key: "id", Value: formId}}
+	update := bson.D{
+		{Key: "$pull", Value: bson.D{
+			{Key: "questionids", Value: questionId},
+		}},
+	}
+	_, err := f.db.Collection(f.collectionName).UpdateOne(f.ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
