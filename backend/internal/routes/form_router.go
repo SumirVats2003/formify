@@ -31,6 +31,10 @@ func InitFormRoutes(db *mongo.Database, ctx context.Context) chi.Router {
 func (f FormRouter) CreateForm(w http.ResponseWriter, r *http.Request) {
 	userId := chi.URLParam(r, "userId")
 
+	if userId == "" {
+		http.Error(w, "Missing Parameters", http.StatusBadRequest)
+	}
+
 	var formRequest models.FormRequest
 	formRequest, err := utils.ParseJSON(formRequest, r)
 	if err != nil {
@@ -52,6 +56,9 @@ func (f FormRouter) CreateForm(w http.ResponseWriter, r *http.Request) {
 
 func (f FormRouter) GetFormById(w http.ResponseWriter, r *http.Request) {
 	formId := chi.URLParam(r, "formId")
+	if formId == "" {
+		http.Error(w, "Missing Parameters", http.StatusBadRequest)
+	}
 
 	form, err := f.formApi.GetFormById(formId)
 	if err != nil {
@@ -67,6 +74,9 @@ func (f FormRouter) GetFormById(w http.ResponseWriter, r *http.Request) {
 
 func (f FormRouter) DeleteFormById(w http.ResponseWriter, r *http.Request) {
 	formId := chi.URLParam(r, "formId")
+	if formId == "" {
+		http.Error(w, "Missing Parameters", http.StatusBadRequest)
+	}
 
 	deleted, err := f.formApi.DeleteFormById(formId)
 	if err != nil {
@@ -82,6 +92,9 @@ func (f FormRouter) DeleteFormById(w http.ResponseWriter, r *http.Request) {
 
 func (f FormRouter) GetAllUserFormSummaries(w http.ResponseWriter, r *http.Request) {
 	userId := chi.URLParam(r, "userId")
+	if userId == "" {
+		http.Error(w, "Missing Parameters", http.StatusBadRequest)
+	}
 
 	formSummaries, err := f.formApi.GetAllUserFormSummaries(userId)
 	if err != nil {

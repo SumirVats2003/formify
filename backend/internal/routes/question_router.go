@@ -28,6 +28,9 @@ func InitQuestionRoutes(db *mongo.Database, ctx context.Context) chi.Router {
 
 func (q QuestionRouter) AddQuestion(w http.ResponseWriter, r *http.Request) {
 	formId := chi.URLParam(r, "formId")
+	if formId == "" {
+		http.Error(w, "Missing Parameters", http.StatusBadRequest)
+	}
 
 	var questionRequest models.QuestionRequest
 	questionRequest, err := utils.ParseJSON(questionRequest, r)
@@ -51,6 +54,9 @@ func (q QuestionRouter) AddQuestion(w http.ResponseWriter, r *http.Request) {
 func (q QuestionRouter) DeleteQuestionById(w http.ResponseWriter, r *http.Request) {
 	questionId := chi.URLParam(r, "questionId")
 	formId := chi.URLParam(r, "formId")
+	if formId == "" || questionId == "" {
+		http.Error(w, "Missing Parameters", http.StatusBadRequest)
+	}
 
 	deleted, err := q.questionApi.DeleteQuestionById(questionId, formId)
 	if err != nil {
