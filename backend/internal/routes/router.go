@@ -2,11 +2,13 @@ package routes
 
 import (
 	"github.com/SumirVats2003/formify/backend/internal/app"
+	"github.com/SumirVats2003/formify/backend/internal/middleware"
 	"github.com/go-chi/chi/v5"
 )
 
 func SetupRoutes(app *app.App) (*chi.Mux, error) {
 	r := chi.NewRouter()
+	r.Use(middleware.CorsMiddleware)
 	db := app.DB.Database("formify")
 
 	// heartbeat
