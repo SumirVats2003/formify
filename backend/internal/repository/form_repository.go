@@ -95,6 +95,9 @@ func (f FormRepository) AddQuestionToForm(formId, questionId string) error {
 		{Key: "$push", Value: bson.D{
 			{Key: "questionids", Value: questionId},
 		}},
+		{Key: "$set", Value: bson.D{
+			{Key: "modificationtimestamp", Value: utils.GetCurrentTimestamp()},
+		}},
 	}
 	_, err := f.db.Collection(f.collectionName).UpdateOne(f.ctx, filter, update)
 	if err != nil {
@@ -108,6 +111,9 @@ func (f FormRepository) RemoveQuestionFromForm(questionId, formId string) error 
 	update := bson.D{
 		{Key: "$pull", Value: bson.D{
 			{Key: "questionids", Value: questionId},
+		}},
+		{Key: "$set", Value: bson.D{
+			{Key: "modificationtimestamp", Value: utils.GetCurrentTimestamp()},
 		}},
 	}
 	_, err := f.db.Collection(f.collectionName).UpdateOne(f.ctx, filter, update)

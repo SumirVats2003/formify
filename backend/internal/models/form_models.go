@@ -1,12 +1,14 @@
 package models
 
 type Form struct {
-	Id                string   `json:"id"`
-	Title             string   `json:"title"`
-	CreatorId         string   `json:"creator_id"`
-	QuestionIds       []string `json:"question_ids"`
-	AttachedSheet     string   `json:"sheet_url"`
-	ValidityTimestamp int64    `json:"validity_timestamp"`
+	Id                    string   `json:"id"`
+	Title                 string   `json:"title"`
+	CreatorId             string   `json:"creator_id"`
+	QuestionIds           []string `json:"question_ids"`
+	AttachedSheet         string   `json:"sheet_url"`
+	CreationTimestamp     int64    `json:"creation_timestamp"`
+	ModificationTimestamp int64    `json:"modification_timestamp"`
+	ValidityTimestamp     int64    `json:"validity_timestamp"`
 }
 
 type FormRequest struct {
@@ -17,20 +19,24 @@ type FormRequest struct {
 }
 
 type FormResponse struct {
-	Id                string     `json:"id"`
-	Title             string     `json:"title"`
-	CreatorId         string     `json:"creator_id"`
-	Questions         []Question `json:"questions"`
-	AttachedSheet     string     `json:"sheet_url"`
-	ValidityTimestamp int64      `json:"validity_timestamp"`
+	Id                    string     `json:"id"`
+	Title                 string     `json:"title"`
+	CreatorId             string     `json:"creator_id"`
+	Questions             []Question `json:"questions"`
+	AttachedSheet         string     `json:"sheet_url"`
+	CreationTimestamp     int64      `json:"creation_timestamp"`
+	ModificationTimestamp int64      `json:"modification_timestamp"`
+	ValidityTimestamp     int64      `json:"validity_timestamp"`
 }
 
 type FormSummary struct {
-	Id                string `json:"id"`
-	Title             string `json:"title"`
-	CreatorId         string `json:"creator_id"`
-	AttachedSheet     string `json:"sheet_url"`
-	ValidityTimestamp int64  `json:"validity_timestamp"`
+	Id                    string `json:"id"`
+	Title                 string `json:"title"`
+	CreatorId             string `json:"creator_id"`
+	AttachedSheet         string `json:"sheet_url"`
+	CreationTimestamp     int64  `json:"creation_timestamp"`
+	ModificationTimestamp int64  `json:"modification_timestamp"`
+	ValidityTimestamp     int64  `json:"validity_timestamp"`
 }
 
 type Question struct {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/SumirVats2003/formify/backend/internal/models"
 	"github.com/SumirVats2003/formify/backend/internal/repository"
+	"github.com/SumirVats2003/formify/backend/utils"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -32,12 +33,14 @@ func (f FormApi) CreateForm(userId string, formRequest models.FormRequest) (stri
 	}
 
 	form := models.Form{
-		Id:                "",
-		Title:             formRequest.Title,
-		CreatorId:         formRequest.CreatorId,
-		QuestionIds:       questionIds,
-		AttachedSheet:     "",
-		ValidityTimestamp: formRequest.ValidityTimestamp,
+		Id:                    "",
+		Title:                 formRequest.Title,
+		CreatorId:             formRequest.CreatorId,
+		QuestionIds:           questionIds,
+		AttachedSheet:         "",
+		CreationTimestamp:     utils.GetCurrentTimestamp(),
+		ModificationTimestamp: utils.GetCurrentTimestamp(),
+		ValidityTimestamp:     formRequest.ValidityTimestamp,
 	}
 
 	formId, err := f.formRepository.CreateForm(form)
@@ -63,12 +66,14 @@ func (f FormApi) GetFormById(formId string) (models.FormResponse, error) {
 	}
 
 	formResponse := models.FormResponse{
-		Id:                form.Id,
-		Title:             form.Title,
-		CreatorId:         form.CreatorId,
-		Questions:         formQuestions,
-		AttachedSheet:     form.AttachedSheet,
-		ValidityTimestamp: form.ValidityTimestamp,
+		Id:                    form.Id,
+		Title:                 form.Title,
+		CreatorId:             form.CreatorId,
+		Questions:             formQuestions,
+		AttachedSheet:         form.AttachedSheet,
+		CreationTimestamp:     form.CreationTimestamp,
+		ModificationTimestamp: form.ModificationTimestamp,
+		ValidityTimestamp:     form.ValidityTimestamp,
 	}
 	return formResponse, nil
 }
