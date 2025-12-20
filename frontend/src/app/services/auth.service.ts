@@ -6,22 +6,19 @@ import { AxiosFactory } from '../factory/axios.factory';
   providedIn: 'root'
 })
 export class AuthService {
-  axios: AxiosInstance;
-
-  constructor() {
-    this.axios = AxiosFactory.getAxiosInstance();
-  }
+  axios: AxiosInstance = AxiosFactory.getAxiosInstance();
 
   loginUser(email: string, password: string) {
     try {
-      const result = this.axios.post("/auth/login",
-        {
+      const result = this.axios.get("/auth/login", {
+        params: {
           email, password
         }
-      )
-      console.log(result)
+      })
+      return result;
     } catch (error) {
       console.log(error);
+      return null;
     }
   }
 }
